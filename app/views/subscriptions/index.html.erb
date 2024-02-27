@@ -1,0 +1,25 @@
+<h2>Subscriptions</h2>
+
+<table> 
+<head> </head>
+<body> 
+<tr>
+  <th> ID </th>
+  <th> Customer-ID </th>
+  <th> Status </th>
+  <th> Name </th>
+  <th> Email </th>
+  
+</tr>
+<% @subscriptions.each do |subscription|%> 
+<tr>
+  <td> <%= subscription.subscription_id %> </td>
+  <td> <%= subscription.customer_id %> </td>
+    <td> <%= subscription.status %> </td>
+  <td> <%= subscription.customer_name %> </td>
+  <td> <%= subscription.customer_email %> </td>
+
+</tr>
+<% end %>
+</body>
+</table>

@@ -1,0 +1,6 @@
+:concurrency: 5
+:queues:
+  - default
+  - subscription_create
+  - subscription_update
+  - subscription_delete

@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  web:
+    image: stripe-task
+    command: bundle exec rails s -b 0.0.0.0 -p 3000
+    # entrypoint: ['./docker-entrypoint.sh']
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - sidekiq
+      - redis
+    env_file:
+      - .env
+    environment: &common_web_env
+      DATABASE: stripe_task_development
+      DB_HOST: db
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/your_rails_app_development"
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - .:/app
+    networks:
+      - stripe_task_network
+
+  db:
+    image: postgres:14.11
+    environment:
+      POSTGRES_DB: stripe_task_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stripe_task_network
+
+  sidekiq:
+    image: stripe-task
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    env_file:
+      - .env
+    environment:
+      <<: *common_web_env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    networks:
+      - stripe_task_network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+    networks:
+      - stripe_task_network
+    
+
+volumes:
+  postgres_data:
+  redis:
+
+networks:
+  stripe_task_network:
