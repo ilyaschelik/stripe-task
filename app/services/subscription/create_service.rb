@@ -21,6 +21,6 @@ class Subscription::CreateService
 
   # as the task mentions: "the initial state of the subscription record should be 'unpaid'"
   def unpaid_subscription?
-    subscription.id 
+    subscription.id
   end
 end
