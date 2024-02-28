@@ -46,37 +46,44 @@ class Stripe::WebhooksController < ApplicationController
       # debugger
       # subscription = event.data.object
       # customer = subscription.customer
-      # debugger
       
+      # debugger
       # Stripe::SubscriptionCreateJob.perform_later(id: subscription.id, customer_id: subscription.customer, status: subscription.status)
       Stripe::SubscriptionCreateJob.perform_later(subscription_data(event.data.object))
-      puts "customer.subscription.created: #{event.id}"
-    end
-
-    if event.type == 'customer.subscription.updated'
-      # debugger
-      # Subscription::UpdateService.new(subscription: event.data.object).run
-      puts "customer.subscription.updated: #{event.id}"
+      # puts "customer.subscription.created: #{event.id}"
     end
 
     if event.type == 'customer.subscription.deleted'
       # debugger
       # Subscription::CancellationService.new(subscription: event.data.object).run
+      # Stripe::SubscriptionCancelJob.perform_later(subscription_data(event.data.object))
+      # data = subscription_data(event.data.object)
+      # debugger
+      # Subscription::CancelService.new(subscription: data).run
+      # cancellation_data = subscription_data(event.data.object)
+      # cancellation_data[:latest_invoice] = event.data.objec
+      Stripe::SubscriptionCancelJob.perform_later(subscription_data(event.data.object))
       puts "customer.subscription.deleted: #{event.id}"
     end
 
-    if event.type == 'subscription_schedule.canceled'
-      # debugger
-      # Subscription::CancellationService.new(subscription: event.data.object).run
-      puts "subscription_schedule.canceled: #{event.id}"
+    if event.type ==  'invoice.payment_succeeded'
+      # invoice = event.data.object
+      Stripe::InvoicePaymentSucceedJob.perform_later(invoice_data(event.data.object))
+      # puts "invoice.payment_succeeded: #{event.id}"
     end
 
-    if event.type ==  'invoice.payment_succeeded'
-      # debugger
-      puts "invoice.payment_succeeded: #{event.id}"
-    end
-    
-    
+    # if event.type == 'customer.subscription.updated'
+    #   debugger
+    #   # Subscription::UpdateService.new(subscription: event.data.object).run
+    #   puts "customer.subscription.updated: #{event.id}"
+    # end
+
+    # if event.type == 'subscription_schedule.canceled'
+    #   debugger
+    #   # Subscription::CancellationService.new(subscription: event.data.object).run
+    #   puts "subscription_schedule.canceled: #{event.id}"
+    # end
+
     render json: { message: :success }
   end
 
@@ -86,7 +93,17 @@ class Stripe::WebhooksController < ApplicationController
     {
       id: subscription.id,
       customer_id: subscription.customer,
+      latest_invoice_id: subscription.latest_invoice,
       status: subscription.status
+    }
+  end
+
+  def invoice_data(invoice)
+    {
+      id: invoice.id,
+      status: invoice.status,
+      paid: invoice.paid,
+      subscription_id: invoice.subscription
     }
   end
 end
