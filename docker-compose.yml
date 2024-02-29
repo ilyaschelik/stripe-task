@@ -12,8 +12,8 @@ services:
       - "3000:3000"
     depends_on:
       - db
-      - sidekiq
       - redis
+      - sidekiq
     env_file:
       - .env
     environment: &common_web_env
