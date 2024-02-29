@@ -3,39 +3,30 @@ require 'rails_helper'
 describe Invoice::PaymentSucceed, type: :service do
 
   context 'when invoice.payment_succeeded event is received' do
+
+    let(:subscription_id) { 'subscription_id' }
+    let(:invoice_id) { 'invoice_id' }
+    let(:invoice_status) { 'paid' }
+
+    let!(:subscription_instance) { Subscription.create(subscription_id: subscription_id, status: 'unpaid') }
+
     it "updates the subscription state to 'paid'" do
 
-      invoice_data(invoice)
-        {
-          id: 'invoice_id',
-          status: 'invoice_status',
-          paid: 'invoice_paid',
-          subscription_id: 'invoice_subscription'
-        }
-      
-      # subscription_data = {
-      #   id: 'subscription_id',
-      #   customer_id: 'customer_id',
-      #   status: 'active'
-      # }
+      invoice_data = {
+          id: invoice_id,
+          status: described_class::STATUS_PAID,
+          paid: true,
+          subscription_id: subscription_id
+      }
 
-      # allow(Stripe::Customer).to receive(:retrieve).and_return(double('customer', name: 'Fake Name', email: 'fakename@fakename.com'))
-      # allow(Stripe::Invoice).to receive(:retrieve).and_return(double('invoice'))
+      allow(Stripe::Subscription).to receive(:retrieve).and_return(double('subscription', latest_invoice: invoice_id))
+      payment_succeed_service = described_class.new(invoice: invoice_data)
 
-      # subscription_create_service = described_class.new(subscription: subscription_data)
-      
-      # expect {
-      #   subscription_create_service.run
-      # }.to change(Subscription, :count).by(1)
-      
-      # created_subscription = Subscription.last
+      expect { payment_succeed_service.run }.not_to change(Subscription, :count)
 
-      # expect(created_subscription.subscription_id).to eq('subscription_id')
-
-      # expect(created_subscription.customer_id).to eq('customer_id')
-      # expect(created_subscription.customer_name).to eq('Fake Name')
-      # expect(created_subscription.customer_email).to eq('fakename@fakename.com')
-      # expect(created_subscription.status).to eq(described_class::DEFAULT_CREATION_STATUS)
+      updated_subscription = Subscription.last
+      expect(updated_subscription.subscription_id).to eq(subscription_id)
+      expect(updated_subscription.status).to eq(described_class::STATUS_PAID)
     end
   end
 end

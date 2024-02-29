@@ -19,7 +19,7 @@ services:
     environment: &common_web_env
       DATABASE: stripe_task_development
       DB_HOST: db
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/your_rails_app_development"
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/stripe_task_development"
       REDIS_URL: redis://redis:6379
     volumes:
       - .:/app

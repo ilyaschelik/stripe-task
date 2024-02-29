@@ -24,7 +24,7 @@ class Invoice::PaymentSucceed
     @subscription_instance ||= Subscription.find_by(subscription_id: invoice.subscription_id)
   end
 
-  def subscription 
+  def subscription
     invoice.subscription
   end
 
@@ -32,7 +32,7 @@ class Invoice::PaymentSucceed
     invoice.paid
   end
 
-  def id 
+  def id
     invoice.id 
   end
 end

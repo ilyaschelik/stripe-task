@@ -51,3 +51,9 @@ You can alternatively visit the rails c and check the Subscription model/subscri
 
 * How to run the test suite
 
+To run the test specs please run the following command: 
+
+```
+docker exec -it  -e RAILS_ENV=test -e DATABASE_URL="postgres://postgres:postgres@db:5432/stripe_task_test" stripe-task-web-1 bundle exec rake db:prepare && rspec spec/
+```
+
