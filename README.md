@@ -19,7 +19,7 @@ For each operation, subscription create, update and delete, 5 concurrent sidekiq
 
 The app makes use of sidekiq & redis for background services and postgres as database service.
 
-*NOTE: Before running the app, please rename the .env-sample file as .env and update the key values defined within with your own credentials from Stripe*
+*NOTE: Before running the app, please rename the dot-env-sample file as .env and update the key values defined within with your own credentials from Stripe*
 
 Please run the following command to make the whole app up. 
 
